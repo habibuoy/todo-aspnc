@@ -1,0 +1,6 @@
+@Todo_HostAddress = https://localhost:7000
+
+GET {{Todo_HostAddress}}/
+Accept: application/json
+
+###
