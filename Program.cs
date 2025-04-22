@@ -96,6 +96,27 @@ todo.MapPost("/edit/{id}", static async (int id, TodoContext context, HttpContex
     return Results.Ok(existing);
 });
 
+todo.MapPost("/complete/{id}", static async (int id, TodoContext context) =>
+{
+    var existing = await context.Todos.FindAsync(id);
+
+    if (existing == null)
+    {
+        return Results.NotFound();
+    }
+
+    if (existing.IsCompleted)
+    {
+        return Results.Ok();
+    }
+
+    existing.IsCompleted = true;
+
+    await context.SaveChangesAsync();
+
+    return Results.Ok(existing);
+});
+
 todo.MapDelete("/delete/{id}", static async (int id, TodoContext context) =>
 {
     var existing = await context.Todos.FindAsync(id);
