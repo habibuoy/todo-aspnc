@@ -32,7 +32,25 @@ if (app.Environment.IsDevelopment())
 
 var todo = app.MapGroup("/api/todos");
 
-todo.MapGet("/", static async (TodoContext context) => await context.Todos.ToListAsync());
+todo.MapGet("/", static async (TodoFilter? filter, TodoContext context) =>
+{
+    var todo = context.Todos.AsQueryable();
+
+    if (filter != null)
+    {    
+        if (filter.IsCompleted.HasValue)
+        {
+            todo = todo.Where(t => t.IsCompleted == filter.IsCompleted.Value);
+        }
+
+        if (!string.IsNullOrEmpty(filter.Content))
+        {
+            todo = todo.Where(t => t.Content.Contains(filter.Content));
+        }
+    }
+
+    return Results.Ok(await todo.ToListAsync());
+});
 
 todo.MapGet("/{id}", static async (int id, TodoContext context) =>
 {
